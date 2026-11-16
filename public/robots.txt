@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /staff
+Disallow: /profile
+Disallow: /booking-history
+Disallow: /payment/status/
+
+Sitemap: https://funfinder.ge/sitemap.xml

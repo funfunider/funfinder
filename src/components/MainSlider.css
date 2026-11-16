@@ -1,0 +1,745 @@
+/* ===================================================
+   HERO SHOWCASE COMPONENT (FunFinder Elite Design)
+   Replaces clunky auto-slider with representative,
+   multi-card featured showcase.
+   =================================================== */
+
+.hero-showcase-container {
+  width: 100%;
+  position: relative;
+  margin-bottom: 24px;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* ===== MAIN GRID: SPOTLIGHT + SIDEBAR ===== */
+.hero-showcase-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 18px;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+@media (min-width: 1200px) {
+  .hero-showcase-grid {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 22px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero-showcase-grid {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px;
+  }
+}
+
+/* ===================================================
+   1. CLEAN BRIGHT SPOTLIGHT CARD (LEFT / MAIN)
+   Zero dark scrims or text overlays on the photo!
+   =================================================== */
+.hero-spotlight-card {
+  position: relative;
+  height: 440px;
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: 1px solid #e8ebed;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.hero-spotlight-card:hover {
+  box-shadow: 0 12px 34px rgba(135, 0, 58, 0.12);
+  border-color: rgba(135, 0, 58, 0.25);
+}
+
+.hero-spotlight-media {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.hero-spotlight-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: heroFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0.75;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hero-spotlight-card:hover .hero-spotlight-img {
+  transform: scale(1.03);
+}
+
+/* Clean Info Bar cleanly BELOW the photo */
+.hero-spotlight-info-bar {
+  flex-shrink: 0;
+  background: #ffffff;
+  border-top: 1px solid #eef0f3;
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hero-info-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-info-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hero-inline-popular {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(135, 0, 58, 0.09);
+  color: #87003A;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.hero-inline-loc {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hero-inline-rating {
+  color: #d97706;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.hero-spotlight-title-clean {
+  color: #111827 !important;
+  font-size: clamp(1.1rem, 1.8vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.35px;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-info-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.hero-clean-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+}
+
+.hero-clean-price-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.hero-clean-price-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.hero-spotlight-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #87003A 0%, #a80048 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(135, 0, 58, 0.28);
+  transition: all 0.25s ease;
+}
+
+.hero-spotlight-btn:hover {
+  background: linear-gradient(135deg, #9e0044 0%, #c40054 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(135, 0, 58, 0.38);
+}
+
+/* ===================================================
+   2. SHOWCASE NAVIGATOR (RIGHT SIDEBAR)
+   =================================================== */
+.hero-showcase-sidebar {
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid #e8ebed;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 440px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+}
+
+.hero-showcase-sidebar::-webkit-scrollbar,
+.hero-sidebar-list::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.hero-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 2px 2px;
+}
+
+.hero-sidebar-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hero-sidebar-fire-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: rgba(135, 0, 58, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-sidebar-title-texts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hero-sidebar-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.2px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-sidebar-sub {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #6b7280;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-sidebar-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.hero-ctrl-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.hero-ctrl-btn:hover {
+  border-color: #87003A;
+  color: #87003A;
+  background: rgba(135, 0, 58, 0.06);
+}
+
+.hero-sidebar-counter {
+  font-size: 11px;
+  font-weight: 800;
+  color: #87003A;
+  background: rgba(135, 0, 58, 0.08);
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.hero-sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  justify-content: space-between;
+}
+
+/* Individual Navigator Item Card */
+.hero-nav-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 14px;
+  border: 1.5px solid #f0f2f4;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.hero-nav-card:hover {
+  background: #f3f5f8;
+  border-color: #e2e5e9;
+  transform: none; /* No horizontal translate to prevent scrollbars */
+}
+
+.hero-nav-card.active {
+  background: #ffffff;
+  border-color: #87003A;
+  box-shadow: 0 4px 16px rgba(135, 0, 58, 0.12);
+}
+
+/* Progress bar inside active card */
+.hero-nav-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, #87003A, #d9005e);
+  animation: navProgress 5.5s linear infinite;
+  border-radius: 0 0 14px 14px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@keyframes navProgress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.hero-nav-thumb-wrap {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 9px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.hero-nav-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-nav-rank-badge {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: rgba(17, 24, 39, 0.78);
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  backdrop-filter: blur(4px);
+}
+
+.hero-nav-card.active .hero-nav-rank-badge {
+  background: #87003A;
+}
+
+.hero-nav-active-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #87003A;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 0 6px rgba(135, 0, 58, 0.6);
+}
+
+.hero-nav-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-nav-category {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #87003A;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.hero-nav-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+
+.hero-nav-card.active .hero-nav-title {
+  color: #87003A;
+}
+
+.hero-nav-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.hero-nav-price {
+  font-weight: 700;
+  color: #374151;
+}
+
+.hero-nav-rating {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.hero-nav-arrow-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.hero-nav-card:hover .hero-nav-arrow-btn,
+.hero-nav-card.active .hero-nav-arrow-btn {
+  background: rgba(135, 0, 58, 0.08);
+  color: #87003A;
+}
+
+/* ===================================================
+   3. TRUST & VALUE STRIP (Underneath the showcase)
+   =================================================== */
+.hero-trust-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.hero-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e8ebed;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-trust-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.hero-trust-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(135, 0, 58, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-trust-texts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hero-trust-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.hero-trust-sub {
+  font-size: 11.5px;
+  color: #6b7280;
+  line-height: 1.3;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===================================================
+   RESPONSIVE DESIGN (TABLET & MOBILE)
+   =================================================== */
+
+/* Tablet & Mobile (< 880px) */
+@media (max-width: 880px) {
+  .hero-showcase-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .hero-spotlight-card {
+    height: auto;
+    min-width: 0;
+    max-width: 100%;
+    border-radius: 18px;
+  }
+
+  .hero-spotlight-media {
+    height: 240px;
+    flex: none;
+  }
+
+  .hero-spotlight-info-bar {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .hero-spotlight-title-clean {
+    font-size: 1.15rem;
+  }
+
+  .hero-showcase-sidebar {
+    height: auto;
+    padding: 12px 12px 10px 12px;
+    border-radius: 16px;
+  }
+
+  .hero-sidebar-list {
+    flex-direction: row;
+    justify-content: flex-start;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 10px;
+    padding: 2px 2px 6px 2px;
+  }
+
+  .hero-nav-card {
+    width: 245px !important;
+    min-width: 245px !important;
+    max-width: 245px !important;
+    flex: 0 0 245px !important;
+    scroll-snap-align: center;
+  }
+
+  .hero-trust-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .hero-trust-item {
+    padding: 10px 12px;
+  }
+}
+
+/* Small mobile (< 540px) */
+@media (max-width: 540px) {
+  .hero-spotlight-media {
+    height: 210px;
+  }
+
+  .hero-spotlight-info-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .hero-spotlight-title-clean {
+    font-size: 1.1rem;
+    white-space: normal;
+  }
+
+  .hero-info-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .hero-clean-price {
+    align-items: flex-start;
+  }
+
+  .hero-spotlight-btn {
+    padding: 9px 15px;
+    font-size: 0.84rem;
+  }
+
+  .hero-nav-card {
+    width: 230px !important;
+    min-width: 230px !important;
+    max-width: 230px !important;
+    flex: 0 0 230px !important;
+  }
+
+  .hero-trust-strip {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* ===================================================
+   BACKWARDS COMPATIBILITY FOR SWIPER / RECENT EVENTS
+   =================================================== */
+.main-slider-wrapper {
+  width: 100%;
+}
+
+.main-slider {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.slide-content {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.slide-overlay {
+  position: absolute;
+  inset: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(0deg, rgba(10, 14, 26, 0.9) 0%, rgba(10, 14, 26, 0.2) 60%, transparent 100%);
+  color: #ffffff;
+}
+
+.slide-title {
+  color: #ffffff !important;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  -webkit-text-fill-color: initial !important;
+}
+
+.slide-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: #87003A;
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 10px;
+}
