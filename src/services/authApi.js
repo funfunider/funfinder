@@ -23,12 +23,13 @@ class AuthApiService {
       typeof window !== 'undefined' &&
       (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const envUrl = typeof process !== 'undefined' ? process.env?.REACT_APP_API_BASE_URL : undefined;
-    const base =
+    const rawBase =
       envUrl && (isLocal || !envUrl.includes('localhost'))
         ? envUrl
         : isLocal
           ? 'http://localhost:5000'
-          : 'https://funfinder-front.vercel.app';
+          : 'https://funfinder-xi.vercel.app';
+    const base = rawBase.replace(/\/+(en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)?\/?$/, '');
     return `${base}/${getLanguage()}/api/v3`;
   }
 

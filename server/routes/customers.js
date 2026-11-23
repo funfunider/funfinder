@@ -655,10 +655,10 @@ export const handleCustomerUpdateProfile = async (req, res) => {
 // 5. Google Login handler
 export const handleCustomerGoogleLogin = async (req, res) => {
   try {
-    let { email, firstname, lastname, name, token, credential, code, image } = req.body;
+    let { email, firstname, lastname, name, token: incomingToken, credential, code, image } = req.body;
 
     // Verify ID token with Google if provided
-    const idToken = token || credential;
+    const idToken = incomingToken || credential;
     if (idToken && typeof idToken === 'string' && idToken.split('.').length === 3) {
       try {
         const tokenRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
@@ -674,6 +674,44 @@ export const handleCustomerGoogleLogin = async (req, res) => {
         }
       } catch (tokenErr) {
         console.warn('Google token validation fallback note:', tokenErr.message);
+      }
+
+      // Fallback: decode JWT payload directly if Google tokeninfo was unreachable
+      if (!email) {
+        try {
+          const parts = idToken.split('.');
+          if (parts.length === 3) {
+            const rawPayload = Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+            const payload = JSON.parse(rawPayload);
+            if (payload.email) {
+              email = payload.email;
+              name = payload.name || name;
+              firstname = payload.given_name || firstname;
+              lastname = payload.family_name || lastname;
+              image = payload.picture || image;
+            }
+          }
+        } catch (jwtErr) {
+          console.warn('Google JWT local decode note:', jwtErr.message);
+        }
+      }
+    } else if (idToken && typeof idToken === 'string' && idToken.startsWith('ya29.')) {
+      try {
+        const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${idToken}` }
+        });
+        if (userRes.ok) {
+          const payload = await userRes.json();
+          if (payload.email) {
+            email = payload.email;
+            name = payload.name || name;
+            firstname = payload.given_name || firstname;
+            lastname = payload.family_name || lastname;
+            image = payload.picture || image;
+          }
+        }
+      } catch (err) {
+        console.warn('Google userinfo fetch failed:', err.message);
       }
     }
 

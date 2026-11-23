@@ -15,9 +15,9 @@ export const resolveApiBaseUrl = () => {
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
   const envUrl = typeof process !== 'undefined' ? process.env?.REACT_APP_API_BASE_URL : undefined;
   if (envUrl && (isLocal || !envUrl.includes('localhost'))) {
-    return envUrl;
+    return envUrl.replace(/\/+(en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)?\/?$/, '');
   }
-  return isLocal ? 'http://localhost:5000' : 'https://funfinder-front.vercel.app';
+  return isLocal ? 'http://localhost:5000' : 'https://funfinder-xi.vercel.app';
 };
 
 export const API_BASE_URL = resolveApiBaseUrl();

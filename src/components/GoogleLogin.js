@@ -39,21 +39,33 @@ const GoogleLogin = ({ onSuccess, onError, disabled = false, text }) => {
     setError('');
 
     try {
-      // Decode the JWT token (simplified - in production, verify on server)
-      const payload = JSON.parse(atob(response.credential.split('.')[1]));
+      // Decode the JWT token safely
+      const base64Url = response.credential.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const payload = JSON.parse(jsonPayload);
       
       const userData = {
-        name: payload.name,
+        name: payload.name || '',
+        firstname: payload.given_name || payload.name?.split(' ')[0] || '',
+        lastname: payload.family_name || payload.name?.split(' ').slice(1).join(' ') || '',
         email: payload.email,
         image: payload.picture,
         googleId: payload.sub,
         verified: payload.email_verified,
         loginMethod: 'google',
-        credential: response.credential
+        credential: response.credential,
+        token: response.credential
       };
 
       onSuccess(userData);
     } catch (err) {
+      console.error('Google credential parse error:', err);
       setError('Error during Google authorization');
       onError && onError(err);
     } finally {
@@ -108,11 +120,15 @@ const GoogleLogin = ({ onSuccess, onError, disabled = false, text }) => {
                   .then(userInfo => {
                     const userData = {
                       name: userInfo.name,
+                      firstname: userInfo.given_name || userInfo.name?.split(' ')[0] || '',
+                      lastname: userInfo.family_name || userInfo.name?.split(' ').slice(1).join(' ') || '',
                       email: userInfo.email,
                       image: userInfo.picture,
                       googleId: userInfo.id,
                       verified: userInfo.verified_email,
-                      loginMethod: 'google'
+                      loginMethod: 'google',
+                      token: response.access_token,
+                      credential: response.access_token
                     };
                     onSuccess(userData);
                   })

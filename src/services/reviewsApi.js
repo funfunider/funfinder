@@ -19,12 +19,13 @@ const isLocal =
   typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 const envUrl = typeof process !== 'undefined' ? process.env?.REACT_APP_API_BASE_URL : undefined;
-const API_BASE_URL =
+const rawBase =
   envUrl && (isLocal || !envUrl.includes('localhost'))
     ? envUrl
     : isLocal
       ? 'http://localhost:5000'
-      : 'https://funfinder-front.vercel.app';
+      : 'https://funfinder-xi.vercel.app';
+const API_BASE_URL = rawBase.replace(/\/+(en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)?\/?$/, '');
 const getBaseUrl = () => `${API_BASE_URL}/${getLanguage()}/api/v3/review`;
 
 async function request(endpoint, { headers, ...options } = {}) {

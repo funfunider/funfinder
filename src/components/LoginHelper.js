@@ -16,12 +16,45 @@ const LoginHelper = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     const googleToken = credentialResponse.credential;
     try {
+      let email = '';
+      let name = '';
+      let firstname = '';
+      let lastname = '';
+      let image = '';
+
+      if (googleToken && googleToken.split('.').length === 3) {
+        try {
+          const base64Url = googleToken.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split('')
+              .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join('')
+          );
+          const payload = JSON.parse(jsonPayload);
+          email = payload.email || '';
+          name = payload.name || '';
+          firstname = payload.given_name || payload.name?.split(' ')[0] || '';
+          lastname = payload.family_name || payload.name?.split(' ').slice(1).join(' ') || '';
+          image = payload.picture || '';
+        } catch (e) {
+          console.warn('Could not decode google token locally:', e);
+        }
+      }
+
       const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
       const envUrl = typeof process !== 'undefined' ? process.env?.REACT_APP_API_BASE_URL : undefined;
-      const apiBase = envUrl && (isLocal || !envUrl.includes('localhost')) ? envUrl : (isLocal ? 'http://localhost:5000' : 'https://funfinder-front.vercel.app');
+      const rawBase = envUrl && (isLocal || !envUrl.includes('localhost')) ? envUrl : (isLocal ? 'http://localhost:5000' : 'https://funfinder-xi.vercel.app');
+      const apiBase = rawBase.replace(/\/+(en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)?\/?$/, '');
       const res = await axios.post(`${apiBase}/${getLanguage()}/api/v3/auth/google/login`, 
         { 
-          token: googleToken 
+          token: googleToken,
+          email,
+          name,
+          firstname,
+          lastname,
+          image
         }, 
         {
           withCredentials: true, 
