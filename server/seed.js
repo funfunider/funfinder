@@ -6,7 +6,7 @@ export async function runSeed() {
   const exportDirCandidates = [
     path.resolve(process.cwd(), 'mongodb_export'),
     path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '../mongodb_export'),
-    path.resolve(process.cwd(), '..', 'funfinder-front', 'mongodb_export'),
+    path.resolve(process.cwd(), '..', 'funfinder-xi', 'mongodb_export'),
   ];
   const exportDir = exportDirCandidates.find(d => fs.existsSync(d));
   console.log('🌱 Starting MongoDB sync and seed verification...');

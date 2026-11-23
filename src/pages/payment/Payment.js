@@ -446,10 +446,10 @@ const PaymentPage = ({ bookingData: propBookingData }) => {
     if (!img) return defaultImg;
     const str = String(img);
     if (str.startsWith('http://') || str.startsWith('https://')) {
-      return str.replace('funfinder.ge/uploads/', 'base.funfinder.ge/uploads/');
+      return str.replace('funfinder.ge/uploads/', 'funfinder.ge/uploads/');
     }
-    if (str.startsWith('/')) return 'https://base.funfinder.ge' + str;
-    return 'https://base.funfinder.ge/uploads/service_images/' + str;
+    if (str.startsWith('/')) return 'https://funfinder.ge' + str;
+    return 'https://funfinder.ge/uploads/service_images/' + str;
   };
   const eventImageUrl = getFullImageUrl(rawImg);
 

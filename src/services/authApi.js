@@ -28,7 +28,7 @@ class AuthApiService {
         ? envUrl
         : isLocal
           ? 'http://localhost:5000'
-          : 'https://funfinder-front.vercel.app';
+          : 'https://funfinder-xi.vercel.app';
     const base = rawBase.replace(/\/+(en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)?\/?$/, '');
     return `${base}/${getLanguage()}/api/v3`;
   }

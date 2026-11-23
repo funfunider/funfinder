@@ -58,7 +58,7 @@ const getImageUrl = (image) => {
   if (!image) return defaultActivityImage;
   let imageStr = typeof image === "string" ? image.trim() : String(image).trim();
   if (imageStr.startsWith("http://") || imageStr.startsWith("https://")) {
-    return imageStr.replace("funfinder.ge/uploads/", "base.funfinder.ge/uploads/");
+    return imageStr.replace("funfinder.ge/uploads/", "funfinder.ge/uploads/");
   }
 
   imageStr = imageStr.replace(/\/(?:en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)\/uploads\//i, '/uploads/');
@@ -82,7 +82,7 @@ const getSliderImageUrl = (image) => {
   if (!image) return "";
   let imageStr = typeof image === "string" ? image.trim() : String(image).trim();
   if (imageStr.startsWith("http://") || imageStr.startsWith("https://")) {
-    return imageStr.replace("funfinder.ge/uploads/", "base.funfinder.ge/uploads/");
+    return imageStr.replace("funfinder.ge/uploads/", "funfinder.ge/uploads/");
   }
 
   imageStr = imageStr.replace(/\/(?:en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)\/uploads\//i, '/uploads/');

@@ -1,5 +1,5 @@
 // Base URL for images
-export const IMAGE_BASE_URL = "https://base.funfinder.ge/uploads/service_images/";
+export const IMAGE_BASE_URL = "https://funfinder.ge/uploads/service_images/";
 
 // Default image for activities without images
 export const DEFAULT_ACTIVITY_IMAGE =
@@ -41,9 +41,9 @@ export const getImageUrl = (image, fallback = DEFAULT_ACTIVITY_IMAGE) => {
   // 1. Strip accidental language prefix inside uploads (e.g. /en/uploads/... or https://.../en/uploads/...)
   imageStr = imageStr.replace(/\/(?:en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)\/uploads\//i, '/uploads/');
 
-  // 2. Fix funfinder.ge/uploads without 'base.' -> base.funfinder.ge/uploads
-  if (imageStr.includes('funfinder.ge/uploads/') && !imageStr.includes('base.funfinder.ge')) {
-    imageStr = imageStr.replace('funfinder.ge/uploads/', 'base.funfinder.ge/uploads/');
+  // 2. Fix funfinder.ge/uploads without 'base.' -> funfinder.ge/uploads
+  if (imageStr.includes('funfinder.ge/uploads/') && !imageStr.includes('funfinder.ge')) {
+    imageStr = imageStr.replace('funfinder.ge/uploads/', 'funfinder.ge/uploads/');
   }
 
   // 3. If it's already a full URL (starts with http:// or https://), return as is
@@ -54,16 +54,16 @@ export const getImageUrl = (image, fallback = DEFAULT_ACTIVITY_IMAGE) => {
   // 4. If it starts with '/', prepend the base backend URL
   if (imageStr.startsWith("/")) {
     if (imageStr.startsWith("/uploads/")) {
-      return "https://base.funfinder.ge" + imageStr;
+      return "https://funfinder.ge" + imageStr;
     }
     if (
       imageStr.startsWith("/media/") ||
       imageStr.startsWith("/slider_images/") ||
       imageStr.startsWith("/service_images/")
     ) {
-      return "https://base.funfinder.ge" + imageStr;
+      return "https://funfinder.ge" + imageStr;
     }
-    return "https://base.funfinder.ge" + imageStr;
+    return "https://funfinder.ge" + imageStr;
   }
 
   // 5. Handle uploaded filenames without leading slash
@@ -73,7 +73,7 @@ export const getImageUrl = (image, fallback = DEFAULT_ACTIVITY_IMAGE) => {
     imageStr.startsWith("img-") ||
     imageStr.startsWith("b64-")
   ) {
-    return `https://base.funfinder.ge/uploads/${imageStr}`;
+    return `https://funfinder.ge/uploads/${imageStr}`;
   }
 
   // Otherwise, prepend the base URL

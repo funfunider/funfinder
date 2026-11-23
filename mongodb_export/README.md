@@ -1,6 +1,6 @@
 # Funfinder MongoDB Export
 
-This directory contains the complete data exported from Funfinder (`https://base.funfinder.ge`), formatted and ready for import into MongoDB.
+This directory contains the complete data exported from Funfinder (`https://funfinder.ge`), formatted and ready for import into MongoDB.
 
 ## Exported Files
 

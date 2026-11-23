@@ -87,9 +87,9 @@ app.get(['/api/health', '/api/v3/health', '/health'], async (req, res) => {
 // Dynamic / Static Sitemap.xml
 app.get(['/sitemap.xml', '/api/sitemap.xml'], (req, res) => {
   const possiblePaths = [
-    path.resolve(process.cwd(), 'funfinder-front', 'public', 'sitemap.xml'),
+    path.resolve(process.cwd(), 'funfinder-xi', 'public', 'sitemap.xml'),
     path.resolve(process.cwd(), 'public', 'sitemap.xml'),
-    path.resolve(process.cwd(), '..', 'funfinder-front', 'public', 'sitemap.xml')
+    path.resolve(process.cwd(), '..', 'funfinder-xi', 'public', 'sitemap.xml')
   ];
   for (const p of possiblePaths) {
     if (fs.existsSync(p)) {
