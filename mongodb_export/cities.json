@@ -1,0 +1,149 @@
+[
+  {
+    "_id": 2,
+    "id": 2,
+    "name": "Adjara",
+    "name_ka": "Adjara",
+    "name_en": "Adjara",
+    "name_ru": "",
+    "is_active": true,
+    "population": 0,
+    "country": {
+      "id": 1,
+      "name": "Georgia",
+      "is_active": true,
+      "name_en": "Georgia",
+      "name_ka": null,
+      "name_ru": null,
+      "name_hi": null,
+      "name_ar": null,
+      "name_he": null
+    }
+  },
+  {
+    "_id": 4,
+    "id": 4,
+    "name": "Dusheti",
+    "name_ka": "Dusheti",
+    "name_en": "Dusheti",
+    "name_ru": "",
+    "is_active": true,
+    "population": 0,
+    "country": {
+      "id": 1,
+      "name": "Georgia",
+      "is_active": true,
+      "name_en": "Georgia",
+      "name_ka": null,
+      "name_ru": null,
+      "name_hi": null,
+      "name_ar": null,
+      "name_he": null
+    }
+  },
+  {
+    "_id": 5,
+    "id": 5,
+    "name": "Samtskhe-Javakheti",
+    "name_ka": "Samtskhe-Javakheti",
+    "name_en": "Samtskhe-Javakheti",
+    "name_ru": "",
+    "is_active": true,
+    "population": 0,
+    "country": {
+      "id": 1,
+      "name": "Georgia",
+      "is_active": true,
+      "name_en": "Georgia",
+      "name_ka": null,
+      "name_ru": null,
+      "name_hi": null,
+      "name_ar": null,
+      "name_he": null
+    }
+  },
+  {
+    "_id": 6,
+    "id": 6,
+    "name": "Gudauri",
+    "name_ka": "Gudauri",
+    "name_en": "Gudauri",
+    "name_ru": "",
+    "is_active": true,
+    "population": 0,
+    "country": {
+      "id": 1,
+      "name": "Georgia",
+      "is_active": true,
+      "name_en": "Georgia",
+      "name_ka": null,
+      "name_ru": null,
+      "name_hi": null,
+      "name_ar": null,
+      "name_he": null
+    }
+  },
+  {
+    "_id": 7,
+    "id": 7,
+    "name": "Tbilisi",
+    "name_ka": "Tbilisi",
+    "name_en": "Tbilisi",
+    "name_ru": "",
+    "is_active": true,
+    "population": 0,
+    "country": {
+      "id": 1,
+      "name": "Georgia",
+      "is_active": true,
+      "name_en": "Georgia",
+      "name_ka": null,
+      "name_ru": null,
+      "name_hi": null,
+      "name_ar": null,
+      "name_he": null
+    }
+  },
+  {
+    "_id": 8,
+    "id": 8,
+    "name": "Asureti",
+    "name_ka": "Asureti",
+    "name_en": "Asureti",
+    "name_ru": "",
+    "is_active": true,
+    "population": 0,
+    "country": {
+      "id": 1,
+      "name": "Georgia",
+      "is_active": true,
+      "name_en": "Georgia",
+      "name_ka": null,
+      "name_ru": null,
+      "name_hi": null,
+      "name_ar": null,
+      "name_he": null
+    }
+  },
+  {
+    "_id": 10,
+    "id": 10,
+    "name": "Kakheti",
+    "name_ka": "Kakheti",
+    "name_en": "Kakheti",
+    "name_ru": "",
+    "is_active": true,
+    "population": 0,
+    "country": {
+      "id": 1,
+      "name": "Georgia",
+      "is_active": true,
+      "name_en": "Georgia",
+      "name_ka": null,
+      "name_ru": null,
+      "name_hi": null,
+      "name_ar": null,
+      "name_he": null
+    }
+  }
+]

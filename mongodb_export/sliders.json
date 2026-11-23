@@ -1,0 +1,46 @@
+[
+  {
+    "_id": 14,
+    "id": 14,
+    "title": "Carting in Makhuntseti",
+    "description": "Carting in Makhuntseti is a fun and adrenaline-filled ride surrounded by beautiful mountain scenery. Enjoy fast laps and fresh air near one of Adjara’s most popular natural spots.",
+    "image": "https://base.funfinder.ge/uploads/slider_images/89b6b3e3-cb30-47b8-8247-0bd854f943e4.png",
+    "raw_image": "/uploads/slider_images/89b6b3e3-cb30-47b8-8247-0bd854f943e4.png",
+    "link": "https://funfinder.ge/activity/11",
+    "order": 0,
+    "is_active": true
+  },
+  {
+    "_id": 15,
+    "id": 15,
+    "title": "Mtirala Buggy Maverick Tour",
+    "description": "Mtirala Buggy Maverick Tour is a thrilling off-road adventure through the lush forests and mountain trails of Mtirala National Park. Drive a powerful Maverick buggy and enjoy nature, adrenaline, and unforgettable views.",
+    "image": "https://base.funfinder.ge/uploads/slider_images/c7794290-5657-42fa-8b9b-74b7e8d095d1.jpg",
+    "raw_image": "/uploads/slider_images/c7794290-5657-42fa-8b9b-74b7e8d095d1.jpg",
+    "link": "https://funfinder.ge/activity/2",
+    "order": 0,
+    "is_active": true
+  },
+  {
+    "_id": 16,
+    "id": 16,
+    "title": "Buran in Goderdzi Mountain Pass",
+    "description": "Buran is a snowmobile ride at Goderdzi Ski Resort, letting visitors explore the snowy mountains beyond the slopes. Fun, fast, and scenic — a great adventure for winter visitors.",
+    "image": "https://base.funfinder.ge/uploads/slider_images/a096b9a5-a960-4167-b201-9718c4e58db6.webp",
+    "raw_image": "/uploads/slider_images/a096b9a5-a960-4167-b201-9718c4e58db6.webp",
+    "link": "https://funfinder.ge/activity/36",
+    "order": 0,
+    "is_active": true
+  },
+  {
+    "_id": 17,
+    "id": 17,
+    "title": "Jeep Tour",
+    "description": "A Jeep tour is an off-road adventure in a 4×4 vehicle, usually through mountainous or rugged terrain. It offers scenic views, thrilling rides, and access to remote areas that regular cars can’t reach. Perfect for adventure seekers and nature lovers.",
+    "image": "https://base.funfinder.ge/uploads/slider_images/21ca3a50-e4c2-4acc-891c-c5c35e6bd8a0.jpg",
+    "raw_image": "/uploads/slider_images/21ca3a50-e4c2-4acc-891c-c5c35e6bd8a0.jpg",
+    "link": "https://funfinder.ge/activity/37",
+    "order": 0,
+    "is_active": true
+  }
+]

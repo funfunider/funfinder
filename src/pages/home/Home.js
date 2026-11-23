@@ -50,52 +50,56 @@ import { updateSeoMeta } from "../../utils/seoUtils";
 const FirstTimeGuide = React.lazy(() => import("../../components/FirstTimeGuide"));
 
 // Image helpers
-const IMAGE_BASE_URL = "https://base.funfinder.ge/uploads/service_images/";
+const IMAGE_BASE_URL = "https://funfinder.ge/uploads/service_images/";
 const defaultActivityImage =
   "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&q=80";
 
 const getImageUrl = (image) => {
   if (!image) return defaultActivityImage;
-  const imageStr = typeof image === "string" ? image : String(image);
-  if (imageStr.startsWith("http://") || imageStr.startsWith("https://")) return imageStr;
-  const isLocal =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+  let imageStr = typeof image === "string" ? image.trim() : String(image).trim();
+  if (imageStr.startsWith("http://") || imageStr.startsWith("https://")) {
+    return imageStr.replace("funfinder.ge/uploads/", "base.funfinder.ge/uploads/");
+  }
+
+  imageStr = imageStr.replace(/\/(?:en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)\/uploads\//i, '/uploads/');
+
   if (imageStr.startsWith("/")) {
     if (imageStr.startsWith("/uploads/")) {
-      return isLocal ? imageStr : "https://base.funfinder.ge" + imageStr;
+      return "https://funfinder.ge" + imageStr;
     }
     if (imageStr.startsWith("/media/")) {
-      return "https://base.funfinder.ge" + imageStr;
+      return "https://funfinder.ge" + imageStr;
     }
-    return imageStr;
+    return "https://funfinder.ge" + imageStr;
   }
   if (imageStr.startsWith("event-") || imageStr.startsWith("slider-") || imageStr.startsWith("img-")) {
-    return (isLocal ? "/uploads/" : "https://base.funfinder.ge/uploads/") + imageStr;
+    return "https://funfinder.ge/uploads/" + imageStr;
   }
   return IMAGE_BASE_URL + imageStr;
 };
 
 const getSliderImageUrl = (image) => {
   if (!image) return "";
-  const imageStr = typeof image === "string" ? image : String(image);
-  if (imageStr.startsWith("http://") || imageStr.startsWith("https://")) return imageStr;
-  const isLocal =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+  let imageStr = typeof image === "string" ? image.trim() : String(image).trim();
+  if (imageStr.startsWith("http://") || imageStr.startsWith("https://")) {
+    return imageStr.replace("funfinder.ge/uploads/", "base.funfinder.ge/uploads/");
+  }
+
+  imageStr = imageStr.replace(/\/(?:en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)\/uploads\//i, '/uploads/');
+
   if (imageStr.startsWith("/")) {
     if (imageStr.startsWith("/uploads/")) {
-      return isLocal ? imageStr : "https://base.funfinder.ge" + imageStr;
+      return "https://funfinder.ge" + imageStr;
     }
     if (imageStr.startsWith("/media/")) {
-      return "https://base.funfinder.ge" + imageStr;
+      return "https://funfinder.ge" + imageStr;
     }
-    return imageStr;
+    return "https://funfinder.ge" + imageStr;
   }
   if (imageStr.startsWith("slider-") || imageStr.startsWith("event-") || imageStr.startsWith("img-")) {
-    return (isLocal ? "/uploads/" : "https://base.funfinder.ge/uploads/") + imageStr;
+    return "https://funfinder.ge/uploads/" + imageStr;
   }
-  return "https://base.funfinder.ge/uploads/slider_images/" + imageStr;
+  return "https://funfinder.ge/uploads/slider_images/" + imageStr;
 };
 
 const defaultSlides = [
@@ -103,14 +107,14 @@ const defaultSlides = [
     id: 1,
     title: "აღმოაჩინე დაუვიწყარი თავგადასავლები საქართველოში",
     description: "ზღვისა და სამთო ტურები, პარაგლაიდინგი, იახტები და ექსტრემალური აქტივობები",
-    image: "https://base.funfinder.ge/uploads/slider_images/89b6b3e3-cb30-47b8-8247-0bd854f943e4.png",
+    image: "https://funfinder.ge/uploads/slider_images/89b6b3e3-cb30-47b8-8247-0bd854f943e4.png",
     link: "/water-activities",
   },
   {
     id: 2,
     title: "ექსტრემალური და VIP გართობა საქართველოში",
     description: "კვადროციკლები, ჯიპ ტურები, რაფტინგი საუკეთესო ადგილობრივი ფასით",
-    image: "https://base.funfinder.ge/uploads/slider_images/c7794290-5657-42fa-8b9b-74b7e8d095d1.jpg",
+    image: "https://funfinder.ge/uploads/slider_images/c7794290-5657-42fa-8b9b-74b7e8d095d1.jpg",
     link: "/land-activities",
   },
 ];

@@ -445,7 +445,9 @@ const PaymentPage = ({ bookingData: propBookingData }) => {
   const getFullImageUrl = (img) => {
     if (!img) return defaultImg;
     const str = String(img);
-    if (str.startsWith('http://') || str.startsWith('https://')) return str;
+    if (str.startsWith('http://') || str.startsWith('https://')) {
+      return str.replace('funfinder.ge/uploads/', 'base.funfinder.ge/uploads/');
+    }
     if (str.startsWith('/')) return 'https://base.funfinder.ge' + str;
     return 'https://base.funfinder.ge/uploads/service_images/' + str;
   };

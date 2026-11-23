@@ -2,14 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import { connectDb, getCollection } from './db.js';
 
-const exportDirCandidates = [
-  path.resolve(process.cwd(), '..', 'funfinder-front', 'mongodb_export'),
-  path.resolve(process.cwd(), 'mongodb_export'),
-];
-
-let exportDir = exportDirCandidates.find(d => fs.existsSync(d));
-
 export async function runSeed() {
+  const exportDirCandidates = [
+    path.resolve(process.cwd(), 'mongodb_export'),
+    path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '../mongodb_export'),
+    path.resolve(process.cwd(), '..', 'funfinder-front', 'mongodb_export'),
+  ];
+  const exportDir = exportDirCandidates.find(d => fs.existsSync(d));
   console.log('🌱 Starting MongoDB sync and seed verification...');
   await connectDb();
 
@@ -208,11 +207,13 @@ export async function runSeed() {
   }
 
   console.log('🎉 Seed & verification complete!');
-  process.exit(0);
+  return true;
 }
 
 if (process.argv[1]?.endsWith('seed.js')) {
-  runSeed().catch(err => {
+  runSeed().then(() => {
+    process.exit(0);
+  }).catch(err => {
     console.error('Seed error:', err);
     process.exit(1);
   });

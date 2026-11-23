@@ -10,11 +10,18 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
-const uri = process.env.MONGODB_URI || 'mongodb+srv://kakhiweinrooneykakhidze_db_user:HkeshHOp7ANuiDpL@cluster0.cffsw4o.mongodb.net/?retryWrites=true&w=majority';
+const DEFAULT_URI = 'mongodb+srv://kakhiweinrooneykakhidze_db_user:HkeshHOp7ANuiDpL@cluster0.cffsw4o.mongodb.net/?retryWrites=true&w=majority';
+let rawUri = process.env.MONGODB_URI;
+// Ignore empty or placeholder Vercel-generated empty databases so live data is always used
+if (!rawUri || rawUri.includes('atlas-yellow-cloud') || rawUri.includes('qby9nzs')) {
+  rawUri = DEFAULT_URI;
+}
+const uri = rawUri;
 const dbName = process.env.MONGODB_DB_NAME || 'funfinder';
 
 let client = null;
 let db = null;
+let autoSeedChecked = false;
 
 export async function connectDb() {
   if (db) return db;
@@ -28,6 +35,22 @@ export async function connectDb() {
     await client.connect();
     db = client.db(dbName);
     console.log(`Connected to MongoDB database: "${dbName}"`);
+
+    // Auto-seed if database is empty
+    if (!autoSeedChecked) {
+      autoSeedChecked = true;
+      try {
+        const eventsCol = db.collection('events');
+        const count = await eventsCol.countDocuments();
+        if (count === 0) {
+          console.log('Database has 0 events. Running auto-seed in background...');
+          import('./seed.js').then(({ runSeed }) => runSeed()).catch(e => console.warn('Auto-seed note:', e.message));
+        }
+      } catch (checkErr) {
+        console.warn('Auto-seed check note:', checkErr.message);
+      }
+    }
+
     return db;
   } catch (error) {
     console.error('MongoDB connection error:', error);

@@ -51,13 +51,10 @@ export const getImageUrl = (image, fallback = DEFAULT_ACTIVITY_IMAGE) => {
     return imageStr;
   }
 
-  // 4. If it starts with '/', check if it is an API upload path or a local public asset
-  const isLocal =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+  // 4. If it starts with '/', prepend the base backend URL
   if (imageStr.startsWith("/")) {
     if (imageStr.startsWith("/uploads/")) {
-      return isLocal ? imageStr : "https://base.funfinder.ge" + imageStr;
+      return "https://base.funfinder.ge" + imageStr;
     }
     if (
       imageStr.startsWith("/media/") ||
@@ -66,7 +63,7 @@ export const getImageUrl = (image, fallback = DEFAULT_ACTIVITY_IMAGE) => {
     ) {
       return "https://base.funfinder.ge" + imageStr;
     }
-    return imageStr;
+    return "https://base.funfinder.ge" + imageStr;
   }
 
   // 5. Handle uploaded filenames without leading slash
@@ -76,7 +73,7 @@ export const getImageUrl = (image, fallback = DEFAULT_ACTIVITY_IMAGE) => {
     imageStr.startsWith("img-") ||
     imageStr.startsWith("b64-")
   ) {
-    return isLocal ? `/uploads/${imageStr}` : `https://base.funfinder.ge/uploads/${imageStr}`;
+    return `https://base.funfinder.ge/uploads/${imageStr}`;
   }
 
   // Otherwise, prepend the base URL
