@@ -68,10 +68,15 @@ app.get(['/api/health', '/api/v3/health', '/health'], async (req, res) => {
   try {
     const db = await getDb();
     const collections = await db.listCollections().toArray();
+    const rawUri = process.env.MONGODB_URI || 'DEFAULT_URI_USED';
+    const cluster = rawUri.includes('@') ? rawUri.split('@')[1].split('/')[0] : 'no-cluster';
     return res.json({
       status: 'ok',
       mongodb: 'connected',
       database: db.databaseName,
+      cluster,
+      has_env_uri: Boolean(process.env.MONGODB_URI),
+      env_db_name: process.env.MONGODB_DB_NAME || null,
       collections: collections.map(c => c.name)
     });
   } catch (err) {
@@ -132,12 +137,19 @@ mountMulti([
   '/api/event',
   '/api/events',
   '/api/v1/event',
+  '/api/v1/events',
   '/api/v2/event',
+  '/api/v2/events',
   '/api/v3/event',
   '/api/v3/events',
+  '/api/v5/event',
+  '/api/v5/events',
   '/api/service',
   '/api/services',
   '/api/v1/service',
+  '/api/v1/services',
+  '/api/v2/service',
+  '/api/v2/services',
   '/api/v3/service',
   '/api/v3/services',
   '/event',
@@ -145,7 +157,9 @@ mountMulti([
   '/service',
   '/services',
   '/v1/event',
+  '/v1/events',
   '/v2/event',
+  '/v2/events',
   '/v3/event',
   '/v3/events',
   '/v3/service',
@@ -157,7 +171,9 @@ mountMulti([
   '/api/category',
   '/api/categories',
   '/api/v1/category',
+  '/api/v1/categories',
   '/api/v2/category',
+  '/api/v2/categories',
   '/api/v3/category',
   '/api/v3/categories',
   '/api/services/companycategory',
@@ -165,8 +181,11 @@ mountMulti([
   '/category',
   '/categories',
   '/v1/category',
+  '/v1/categories',
   '/v2/category',
+  '/v2/categories',
   '/v3/category',
+  '/v3/categories',
   '/services/companycategory'
 ], categoriesRoutes);
 
@@ -175,13 +194,17 @@ mountMulti([
   '/api/city',
   '/api/cities',
   '/api/v1/city',
+  '/api/v1/cities',
   '/api/v2/city',
+  '/api/v2/cities',
   '/api/v3/city',
   '/api/v3/cities',
   '/city',
   '/cities',
   '/v1/city',
-  '/v3/city'
+  '/v1/cities',
+  '/v3/city',
+  '/v3/cities'
 ], citiesRoutes);
 
 // 6. Countries routes
@@ -192,12 +215,15 @@ mountMulti([
   '/api/slider',
   '/api/sliders',
   '/api/v1/slider',
+  '/api/v1/sliders',
   '/api/v3/slider',
   '/api/v3/sliders',
   '/slider',
   '/sliders',
   '/v1/slider',
-  '/v3/slider'
+  '/v1/sliders',
+  '/v3/slider',
+  '/v3/sliders'
 ], slidersRoutes);
 
 // 8. Companies routes (MUST be mounted before /staff so /staff/company matches first)

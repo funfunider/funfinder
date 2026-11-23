@@ -14,7 +14,7 @@ class OrderApiService {
         ? envUrl
         : isLocal
           ? 'http://localhost:5000'
-          : 'https://funfinder-xi.vercel.app';
+          : 'https://funfinder-front.vercel.app';
     this.baseURL = rawBase.replace(/\/+(en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)?\/?$/, '');
   }
 
@@ -289,7 +289,7 @@ class OrderApiService {
       console.log('Payment method:', paymentMethod);
       console.log('Calling endpoint: /api/v5/payment/bog/initiate');
       
-      const origin = (typeof window !== 'undefined' && window.location.origin) || 'https://funfinder-xi.vercel.app';
+      const origin = (typeof window !== 'undefined' && window.location.origin) || 'https://funfinder-front.vercel.app';
       const payload = {
         order_number: orderNumber,
         method: paymentMethod,  // Backend expects 'method', not 'payment_method'

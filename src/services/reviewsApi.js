@@ -24,7 +24,7 @@ const rawBase =
     ? envUrl
     : isLocal
       ? 'http://localhost:5000'
-      : 'https://funfinder-xi.vercel.app';
+      : 'https://funfinder-front.vercel.app';
 const API_BASE_URL = rawBase.replace(/\/+(en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)?\/?$/, '');
 const getBaseUrl = () => `${API_BASE_URL}/${getLanguage()}/api/v3/review`;
 
