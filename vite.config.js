@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
     if (key.startsWith('REACT_APP_') || key === 'NODE_ENV') {
       let value = env[key];
       if (mode === 'production' && typeof value === 'string' && value.includes('http://localhost:5000')) {
-        value = value.replace('http://localhost:5000', 'https://funfinder.ge');
+        value = value.replace('http://localhost:5000', 'https://funfinder-front.vercel.app');
       }
       processEnv[key] = value;
     }

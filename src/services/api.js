@@ -17,7 +17,7 @@ export const resolveApiBaseUrl = () => {
   if (envUrl && (isLocal || !envUrl.includes('localhost'))) {
     return envUrl;
   }
-  return isLocal ? 'http://localhost:5000' : 'https://funfinder.ge';
+  return isLocal ? 'http://localhost:5000' : 'https://funfinder-front.vercel.app';
 };
 
 export const API_BASE_URL = resolveApiBaseUrl();

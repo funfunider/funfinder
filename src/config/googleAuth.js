@@ -1,5 +1,5 @@
 // Google OAuth Configuration
-export const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '339531091899-o323fb104jqb2c7k3bagllog69rg8i4n.apps.googleusercontent.com339531091899-o323fb104jqb2c7k3bagllog69rg8i4n.apps.googleusercontent.com';
+export const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '339531091899-o323fb104jqb2c7k3bagllog69rg8i4n.apps.googleusercontent.com';
 
 // Google OAuth Scopes
 export const GOOGLE_SCOPES = [

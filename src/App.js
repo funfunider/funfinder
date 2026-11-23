@@ -18,6 +18,7 @@ import OrbitalFab from './components/OrbitalFab';
 // Lazy-loaded routes
 const About = React.lazy(() => import("./pages/about/About").then(m => ({ default: m.About })));
 const Tickets = React.lazy(() => import("./pages/tickets/Tickets"));
+const TicketDetails = React.lazy(() => import("./pages/tickets/TicketDetails"));
 const Restrictions = React.lazy(() => import("./pages/restrictions/Restrictions"));
 const Contact = React.lazy(() => import("./pages/contact/Contact"));
 const Rules = React.lazy(() => import("./pages/rules/Rules"));
@@ -54,6 +55,10 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
       <Route path="/tickets" element={<Tickets />} />
+      <Route path="/tickets/:orderNumber" element={<TicketDetails />} />
+      <Route path="/orders/:orderNumber" element={<TicketDetails />} />
+      <Route path="/ticket/:orderNumber" element={<TicketDetails />} />
+      <Route path="/order/:orderNumber" element={<TicketDetails />} />
       <Route path="/restrictions" element={<Restrictions />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/rules" element={<Rules />} />

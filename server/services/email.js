@@ -1,9 +1,37 @@
 /**
- * SendGrid Email Service for FunFinder
- * Ported from Discount-Backend/orders/views/payment.py
+ * Email Service for FunFinder using Nodemailer (Gmail / SMTP)
  */
 
-const SENDGRID_API_URL = 'https://api.sendgrid.com/v3/mail/send';
+import nodemailer from 'nodemailer';
+import QRCode from 'qrcode';
+import fs from 'fs';
+import path from 'path';
+
+let mailTransporter = null;
+
+export function getMailTransporter() {
+  if (mailTransporter) return mailTransporter;
+
+  const user = process.env.SMTP_USER || process.env.GMAIL_USER || 'funfinder.georgia@gmail.com';
+  const rawPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || 'omabuzuwzgaksexq';
+  const pass = rawPass.replace(/\s+/g, '');
+
+  if (process.env.SMTP_HOST) {
+    mailTransporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT) || 465,
+      secure: process.env.SMTP_SECURE === 'true' || Number(process.env.SMTP_PORT) === 465,
+      auth: { user, pass }
+    });
+  } else {
+    mailTransporter = nodemailer.createTransport({
+      service: process.env.SMTP_SERVICE || 'gmail',
+      auth: { user, pass }
+    });
+  }
+
+  return mailTransporter;
+}
 
 /**
  * Builds email HTML using the official FunFinder ticket design
@@ -69,7 +97,7 @@ export function buildTicketEmailHtml(ctx) {
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td valign="middle" style="padding-right:12px;">
-                                        <img src="https://funfinder.ge/static/media/logo.f11e88da6e5f45cdace0.jpg" width="44" height="44" alt="FunFinder" style="display:block;border:0;outline:none;text-decoration:none;border-radius:10px;">
+                                        <img src="${ctx.logo_src || 'cid:funfinder-logo'}" width="44" height="44" alt="FunFinder" style="display:block;border:0;outline:none;text-decoration:none;border-radius:10px;">
                                     </td>
                                     <td valign="middle" style="font-family:'Montserrat','Inter',Arial,sans-serif;font-size:18px;font-weight:800;color:#FFFFFF;letter-spacing:0.5px;line-height:1;">
                                         FUNFINDER
@@ -108,7 +136,7 @@ export function buildTicketEmailHtml(ctx) {
                                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                                             <tr>
                                                 <td valign="middle" align="left">
-                                                    <img src="https://funfinder.ge/static/media/logo.f11e88da6e5f45cdace0.jpg" width="40" height="40" alt="FunFinder" style="display:block;border:0;outline:none;text-decoration:none;border-radius:6px;">
+                                                    <img src="${ctx.logo_src || 'cid:funfinder-logo'}" width="40" height="40" alt="FunFinder" style="display:block;border:0;outline:none;text-decoration:none;border-radius:6px;">
                                                 </td>
                                                 <td valign="middle" align="right" style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:13px;line-height:1.1;color:#333333;text-transform:uppercase;letter-spacing:0.5px;">
                                                     ${ctx.artist_line || 'FUNFINDER'}
@@ -201,7 +229,7 @@ export function buildTicketEmailHtml(ctx) {
                                                 </td>
                                                 <td valign="middle" align="right" width="112" class="stack-col stack-center">
                                                     <a href="${ctx.ticket_url || 'https://funfinder.ge/tickets'}" target="_blank" style="text-decoration:none;border:0;outline:none;">
-                                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;margin=8&amp;data=${encodeURIComponent(ctx.ticket_url || 'https://funfinder.ge/tickets')}" width="100" height="100" alt="QR Code" style="display:block;border:0;outline:none;text-decoration:none;width:100px;height:100px;">
+                                                        <img src="${ctx.qr_src || 'cid:ticket-qrcode'}" width="100" height="100" alt="QR Code" style="display:block;border:0;outline:none;text-decoration:none;width:100px;height:100px;">
                                                     </a>
                                                 </td>
                                             </tr>
@@ -251,59 +279,37 @@ export function buildTicketEmailHtml(ctx) {
 }
 
 /**
- * Send an email via SendGrid API
+ * Send an email via Nodemailer (Gmail / SMTP)
  */
-export async function sendSendGridEmail({ to, subject, html, from }) {
-  const apiKey = process.env.SENDGRID_API_KEY;
-  const senderEmail = from || process.env.SENDGRID_EMAIL_SENDER || 'funfinder.ge@gmail.com';
+export async function sendEmail({ to, subject, html, from, text, attachments }) {
+  const senderEmail = from || process.env.EMAIL_FROM || `"FunFinder Georgia" <${process.env.SMTP_USER || 'funfinder.georgia@gmail.com'}>`;
 
-  if (!apiKey) {
-    console.warn('[SendGrid] SENDGRID_API_KEY is not configured; skipping email dispatch.');
-    return { success: false, reason: 'SENDGRID_API_KEY missing' };
+  if (!to) {
+    console.warn('[Mailer] Missing recipient email address; skipping.');
+    return { success: false, reason: 'Recipient email is missing' };
   }
 
-  const payload = {
-    personalizations: [
-      {
-        to: [{ email: to }]
-      }
-    ],
-    from: {
-      email: senderEmail,
-      name: 'FunFinder Georgia'
-    },
-    subject: subject,
-    content: [
-      {
-        type: 'text/html',
-        value: html
-      }
-    ]
-  };
-
   try {
-    const response = await fetch(SENDGRID_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+    const transporter = getMailTransporter();
+    const info = await transporter.sendMail({
+      from: senderEmail,
+      to,
+      subject,
+      html,
+      text,
+      attachments
     });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error(`[SendGrid] Error sending email to ${to}: HTTP ${response.status}`, errText);
-      return { success: false, status: response.status, error: errText };
-    }
-
-    console.log(`[SendGrid] Successfully sent email to ${to} (${subject})`);
-    return { success: true };
+    console.log(`[Mailer] Successfully sent email to ${to} (${subject}) - MessageId: ${info.messageId}`);
+    return { success: true, messageId: info.messageId };
   } catch (err) {
-    console.error(`[SendGrid] Network error sending email to ${to}:`, err);
+    console.error(`[Mailer] Error sending email to ${to}:`, err);
     return { success: false, error: err.message };
   }
 }
+
+// Backwards compatibility for existing imports in routes
+export const sendSendGridEmail = sendEmail;
 
 /**
  * Builds context dictionary for order emails
@@ -355,17 +361,53 @@ export function buildOrderEmailContext(order, event = null) {
 }
 
 /**
- * Dispatches Customer, Vendor, and Admin emails on successful payment
+ * Dispatches Customer, Vendor, and Admin emails on successful payment with unique QR code
  */
 export async function sendOrderSuccessEmails(order, event = null) {
   const baseCtx = buildOrderEmailContext(order, event);
   const eventName = baseCtx.event_name;
   const companyName = event?.company?.name || order.company_name || 'Partner';
-  const senderEmail = process.env.SENDGRID_EMAIL_SENDER || 'funfinder.ge@gmail.com';
+  const senderEmail = process.env.EMAIL_FROM || `"FunFinder Georgia" <${process.env.SMTP_USER || 'funfinder.georgia@gmail.com'}>`;
+
+  // 1. Prepare inline attachments (QR code buffer & Logo)
+  const attachments = [];
+  const qrPayload = baseCtx.ticket_url || `https://funfinder.ge/orders/${order.order_number || order.id}`;
+
+  try {
+    const qrBuffer = await QRCode.toBuffer(qrPayload, {
+      width: 250,
+      margin: 2,
+      color: {
+        dark: '#3A1D94',
+        light: '#FFFFFF'
+      }
+    });
+
+    attachments.push({
+      filename: 'qrcode.png',
+      content: qrBuffer,
+      cid: 'ticket-qrcode'
+    });
+  } catch (qrErr) {
+    console.warn('[Mailer] Could not generate QR buffer:', qrErr);
+  }
+
+  try {
+    const logoPath = path.resolve(process.cwd(), 'public/logo.jpg');
+    if (fs.existsSync(logoPath)) {
+      attachments.push({
+        filename: 'logo.jpg',
+        path: logoPath,
+        cid: 'funfinder-logo'
+      });
+    }
+  } catch (logoErr) {
+    console.warn('[Mailer] Could not attach local logo:', logoErr);
+  }
 
   const promises = [];
 
-  // 1. Customer Email
+  // 1. Customer Email (კლიენტისთვის - ბილეთი უნიკალური QR კოდით)
   if (order.customer_email) {
     const customerHtml = buildTicketEmailHtml({
       ...baseCtx,
@@ -376,17 +418,18 @@ export async function sendOrderSuccessEmails(order, event = null) {
     });
 
     promises.push(
-      sendSendGridEmail({
+      sendEmail({
         to: order.customer_email,
         subject: `Your FunFinder ticket — ${eventName}`,
         html: customerHtml,
-        from: senderEmail
+        from: senderEmail,
+        attachments
       })
     );
   }
 
-  // 2. Vendor Email
-  const vendorEmail = process.env.FUNFINDER_VENDOR_NOTIFICATION_EMAIL || event?.company?.email;
+  // 2. Vendor / Company Email (კომპანიისთვის/ორგანიზატორისთვის შეტყობინება)
+  const vendorEmail = process.env.FUNFINDER_VENDOR_NOTIFICATION_EMAIL || event?.company?.email || order.company_email;
   if (vendorEmail) {
     const vendorHtml = buildTicketEmailHtml({
       ...baseCtx,
@@ -397,38 +440,122 @@ export async function sendOrderSuccessEmails(order, event = null) {
     });
 
     promises.push(
-      sendSendGridEmail({
+      sendEmail({
         to: vendorEmail,
         subject: `New booking — ${eventName}`,
         html: vendorHtml,
-        from: senderEmail
+        from: senderEmail,
+        attachments
       })
     );
   }
 
-  // 3. Admin Email
-  const adminEmail = process.env.FUNFINDER_ADMIN_EMAIL || 'funfinder.georgia@gmail.com';
-  if (adminEmail) {
+  // 3. Admin & Team Management Emails
+  // მოთხოვნის შესაბამისად: ბილეთის შეძენისას წერილი ყოველთვის ეგზავნება info@funfinder.ge და i.diasamidze@funfinder.ge
+  const defaultAdminRecipients = [
+    'info@funfinder.ge',
+    'i.diasamidze@funfinder.ge'
+  ];
+
+  // Optional extra recipients from environment variables
+  const envRecipients = (process.env.FUNFINDER_ADMIN_EMAILS || process.env.FUNFINDER_ADMIN_EMAIL || '')
+    .split(',')
+    .map(e => e.trim())
+    .filter(Boolean);
+
+  const allAdminRecipients = Array.from(new Set([...defaultAdminRecipients, ...envRecipients]));
+
+  for (const adminRecipient of allAdminRecipients) {
     const adminHtml = buildTicketEmailHtml({
       ...baseCtx,
-      heading: 'New transaction',
-      intro: `Payment processed for ${order.customer_name} (${order.customer_email || 'No email'}) — vendor: ${companyName}.`,
-      hero_eyebrow: 'Admin alert',
-      subject: `[ADMIN] New transaction #${order.order_number || order.id}`
+      heading: 'New Ticket & Order Confirmation',
+      intro: `New paid ticket purchase from ${order.customer_name} (${order.customer_email || 'No email'}) — Vendor: ${companyName}.`,
+      hero_eyebrow: 'FunFinder Notification',
+      subject: `[FunFinder] New Ticket #${order.order_number || order.id} — ${eventName}`
     });
 
     promises.push(
-      sendSendGridEmail({
-        to: adminEmail,
-        subject: `[ADMIN] New transaction #${order.order_number || order.id}`,
+      sendEmail({
+        to: adminRecipient,
+        subject: `[FunFinder] New Ticket #${order.order_number || order.id} — ${eventName}`,
         html: adminHtml,
-        from: senderEmail
+        from: senderEmail,
+        attachments
       })
     );
   }
 
   const results = await Promise.allSettled(promises);
-  console.log(`[SendGrid] Processed ${results.length} email notifications for order #${order.order_number || order.id}`);
+  console.log(`[Mailer] Processed ${results.length} email notifications for order #${order.order_number || order.id}`);
   return results;
+}
+
+/**
+ * Sends a 6-digit verification OTP email for customer registration
+ */
+export async function sendVerificationCodeEmail({ email, code, firstname = '' }) {
+  const greeting = firstname ? `გამარჯობა ${firstname},` : 'გამარჯობა,';
+  const attachments = [];
+
+  try {
+    const logoPath = path.resolve(process.cwd(), 'public/logo.jpg');
+    if (fs.existsSync(logoPath)) {
+      attachments.push({
+        filename: 'logo.jpg',
+        path: logoPath,
+        cid: 'funfinder-logo'
+      });
+    }
+  } catch (_) {}
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f5f9; margin: 0; padding: 20px; }
+        .card { max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+        .header { background: linear-gradient(135deg, #3A1D94 0%, #6E3FF3 100%); padding: 32px 20px; text-align: center; color: #ffffff; }
+        .body { padding: 32px 28px; text-align: center; }
+        .code-box { background: #FAF9FF; border: 2px dashed #6E3FF3; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: center; }
+        .code { font-size: 38px; font-weight: 800; letter-spacing: 10px; color: #3A1D94; font-family: 'Courier New', monospace; display: inline-block; padding-left: 10px; }
+        .footer { font-size: 12px; color: #94a3b8; text-align: center; padding: 18px; border-top: 1px solid #f1f5f9; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="header">
+          <img src="cid:funfinder-logo" width="44" height="44" alt="FunFinder" style="border-radius: 10px; display: inline-block; margin-bottom: 10px;" />
+          <h2 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.5px;">FUNFINDER</h2>
+          <p style="margin: 6px 0 0; font-size: 13px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1.5px;">ელ-ფოსტის დადასტურება</p>
+        </div>
+        <div class="body">
+          <p style="font-size: 16px; color: #334155; margin: 0 0 12px;">${greeting}</p>
+          <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0;">
+            მადლობა FunFinder-ზე რეგისტრაციისთვის! რეგისტრაციის დასასრულებლად გამოიყენეთ ქვემოთ მოცემული ერთჯერადი ვერიფიკაციის კოდი:
+          </p>
+          <div class="code-box">
+            <span class="code">${code}</span>
+          </div>
+          <p style="font-size: 13px; color: #94a3b8; margin: 0;">
+            ⏳ კოდი აქტიურია <strong>10 წუთის</strong> განმავლობაში.<br>
+            თუ თქვენ არ გაგივლიათ რეგისტრაცია, შეგიძლიათ უგულებელყოთ ეს წერილი.
+          </p>
+        </div>
+        <div class="footer">
+          © ${new Date().getFullYear()} FunFinder Georgia. ყველა უფლება დაცულია.
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return await sendEmail({
+    to: email,
+    subject: `${code} — თქვენი FunFinder ვერიფიკაციის კოდი`,
+    html,
+    attachments
+  });
 }
 

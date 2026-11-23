@@ -24,7 +24,7 @@ const API_BASE_URL =
     ? envUrl
     : isLocal
       ? 'http://localhost:5000'
-      : 'https://funfinder.ge';
+      : 'https://funfinder-front.vercel.app';
 const getBaseUrl = () => `${API_BASE_URL}/${getLanguage()}/api/v3/review`;
 
 async function request(endpoint, { headers, ...options } = {}) {

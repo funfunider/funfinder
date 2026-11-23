@@ -1,5 +1,5 @@
 // Base URL for images
-export const IMAGE_BASE_URL = "https://funfinder.ge/uploads/service_images/";
+export const IMAGE_BASE_URL = "https://base.funfinder.ge/uploads/service_images/";
 
 // Default image for activities without images
 export const DEFAULT_ACTIVITY_IMAGE =
@@ -17,7 +17,7 @@ export const DEFAULT_ACTIVITY_IMAGE =
 export const getImageUrl = (image, fallback = DEFAULT_ACTIVITY_IMAGE) => {
   // If image is an object (e.g. primary_image: { id: 209, image: "..." } or { url: "..." })
   if (image && typeof image === "object") {
-    image = image.image || image.url || image.src || image.path || image.file;
+    image = image.image || image.url || image.raw_path || image.raw_image || image.src || image.path || image.file;
   }
 
   // Handle falsy values and literal 'undefined' or 'null' strings
@@ -26,7 +26,7 @@ export const getImageUrl = (image, fallback = DEFAULT_ACTIVITY_IMAGE) => {
   }
 
   // Convert to string if it's not a string
-  const imageStr = typeof image === "string" ? image.trim() : String(image).trim();
+  let imageStr = typeof image === "string" ? image.trim() : String(image).trim();
 
   // Still check for stringified 'undefined'/'null'/'[object Object]' after conversion
   if (
@@ -38,37 +38,45 @@ export const getImageUrl = (image, fallback = DEFAULT_ACTIVITY_IMAGE) => {
     return fallback;
   }
 
-  // If it's already a full URL (starts with http:// or https://), return as is
+  // 1. Strip accidental language prefix inside uploads (e.g. /en/uploads/... or https://.../en/uploads/...)
+  imageStr = imageStr.replace(/\/(?:en|ka|ru|hi|ar|he|tr|hy|kk|uk|zh)\/uploads\//i, '/uploads/');
+
+  // 2. Fix funfinder.ge/uploads without 'base.' -> base.funfinder.ge/uploads
+  if (imageStr.includes('funfinder.ge/uploads/') && !imageStr.includes('base.funfinder.ge')) {
+    imageStr = imageStr.replace('funfinder.ge/uploads/', 'base.funfinder.ge/uploads/');
+  }
+
+  // 3. If it's already a full URL (starts with http:// or https://), return as is
   if (imageStr.startsWith("http://") || imageStr.startsWith("https://")) {
     return imageStr;
   }
 
-  // If it starts with '/', check if it is an API upload path or a local public asset
+  // 4. If it starts with '/', check if it is an API upload path or a local public asset
   const isLocal =
     typeof window !== "undefined" &&
     (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
   if (imageStr.startsWith("/")) {
     if (imageStr.startsWith("/uploads/")) {
-      return isLocal ? imageStr : "https://funfinder.ge" + imageStr;
+      return isLocal ? imageStr : "https://base.funfinder.ge" + imageStr;
     }
     if (
       imageStr.startsWith("/media/") ||
       imageStr.startsWith("/slider_images/") ||
       imageStr.startsWith("/service_images/")
     ) {
-      return "https://funfinder.ge" + imageStr;
+      return "https://base.funfinder.ge" + imageStr;
     }
     return imageStr;
   }
 
-  // Handle uploaded filenames without leading slash
+  // 5. Handle uploaded filenames without leading slash
   if (
     imageStr.startsWith("event-") ||
     imageStr.startsWith("slider-") ||
     imageStr.startsWith("img-") ||
     imageStr.startsWith("b64-")
   ) {
-    return isLocal ? `/uploads/${imageStr}` : `https://funfinder.ge/uploads/${imageStr}`;
+    return isLocal ? `/uploads/${imageStr}` : `https://base.funfinder.ge/uploads/${imageStr}`;
   }
 
   // Otherwise, prepend the base URL

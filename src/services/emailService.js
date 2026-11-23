@@ -13,7 +13,7 @@ class EmailService {
         ? envUrl
         : isLocal
           ? 'http://localhost:5000'
-          : 'https://funfinder.ge';
+          : 'https://funfinder-front.vercel.app';
   }
 
   /**

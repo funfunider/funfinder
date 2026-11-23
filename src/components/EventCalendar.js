@@ -70,7 +70,7 @@ const EventCalendar = ({ eventId, onDateSelect }) => {
       try {
         const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
         const envUrl = typeof process !== 'undefined' ? process.env?.REACT_APP_API_BASE_URL : undefined;
-        const apiBase = envUrl && (isLocal || !envUrl.includes('localhost')) ? envUrl : (isLocal ? 'http://localhost:5000' : 'https://funfinder.ge');
+        const apiBase = envUrl && (isLocal || !envUrl.includes('localhost')) ? envUrl : (isLocal ? 'http://localhost:5000' : 'https://funfinder-front.vercel.app');
         const res = await fetch(
           `${apiBase}/api/v5/event/${eventId}/bookings`,
           { credentials: 'include', headers: { Accept: 'application/json' } }
@@ -85,7 +85,7 @@ const EventCalendar = ({ eventId, onDateSelect }) => {
         try {
           const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
         const envUrl = typeof process !== 'undefined' ? process.env?.REACT_APP_API_BASE_URL : undefined;
-        const apiBase = envUrl && (isLocal || !envUrl.includes('localhost')) ? envUrl : (isLocal ? 'http://localhost:5000' : 'https://funfinder.ge');
+        const apiBase = envUrl && (isLocal || !envUrl.includes('localhost')) ? envUrl : (isLocal ? 'http://localhost:5000' : 'https://funfinder-front.vercel.app');
           const res = await fetch(
             `${apiBase}/api/v5/order/feed`,
             { credentials: 'include', headers: { Accept: 'application/json' } }

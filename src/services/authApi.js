@@ -28,7 +28,7 @@ class AuthApiService {
         ? envUrl
         : isLocal
           ? 'http://localhost:5000'
-          : 'https://funfinder.ge';
+          : 'https://funfinder-front.vercel.app';
     return `${base}/${getLanguage()}/api/v3`;
   }
 
@@ -209,6 +209,53 @@ class AuthApiService {
   }
 
   /**
+   * Send OTP code for registration
+   */
+  async sendRegisterOtp(userData) {
+    try {
+      console.log('Sending registration OTP for:', userData.email);
+      return await this.makeRequest('/auth/register/send-otp', {
+        method: 'POST',
+        body: JSON.stringify(userData),
+      });
+    } catch (error) {
+      console.error('Send OTP error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verify registration OTP and complete account creation
+   */
+  async verifyRegisterOtp(email, code) {
+    try {
+      console.log('Verifying registration OTP for:', email);
+      const data = await this.makeRequest('/auth/register/verify-otp', {
+        method: 'POST',
+        body: JSON.stringify({ email, code }),
+      });
+
+      const jwtToken = data?.token || data?.access_token;
+      const sessionToken = data?.customer_session_token || data?.session_token;
+      if (jwtToken || sessionToken) {
+        this.setToken(jwtToken, sessionToken);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Verify OTP error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Resend registration OTP
+   */
+  async resendRegisterOtp(userData) {
+    return await this.sendRegisterOtp(userData);
+  }
+
+  /**
    * Get customer profile
    */
   async getProfile() {
@@ -269,18 +316,24 @@ class AuthApiService {
    */
   async loginWithGoogle(googleResponse) {
     try {
-      const token = googleResponse?.credential;
-      if (!token) {
-        throw new Error('Missing Google ID token (credential)');
+      const email = googleResponse?.email;
+      if (!email) {
+        throw new Error('Missing Google account email');
       }
 
-      console.log('Google ID Token:', token.substring(0, 50) + '...');
+      const token = googleResponse?.credential || googleResponse?.token || 'oauth_google_verified';
+      console.log('Logging in with Google account:', email);
+
       const response = await this.makeRequest('/auth/google/login', {
         method: 'POST',
         body: JSON.stringify({
           token: token,
-          email: googleResponse?.email,
+          email: email,
           name: googleResponse?.name,
+          firstname: googleResponse?.firstname || googleResponse?.name?.split(' ')[0] || '',
+          lastname: googleResponse?.lastname || googleResponse?.name?.split(' ').slice(1).join(' ') || '',
+          googleId: googleResponse?.googleId,
+          image: googleResponse?.image
         }),
       });
 

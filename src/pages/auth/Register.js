@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -13,6 +13,12 @@ import {
   Alert,
   CircularProgress,
   Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Stack,
 } from '@mui/material';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
@@ -59,7 +65,7 @@ const Register = () => {
   const navigate = useLanguageNavigate();
   const { language } = useLanguage();
   const isKa = language === 'ka';
-  const { register, loginWithGoogle } = useAuth();
+  const { register, loginWithGoogle, sendRegisterOtp, verifyRegisterOtp } = useAuth();
 
   const [form, setForm] = useState({ 
     firstname: '', 
@@ -75,6 +81,23 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // OTP Verification States
+  const [otpDialogOpen, setOtpDialogOpen] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError, setOtpError] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    let timer;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   const handleGoogleSuccess = async (userData) => {
     const result = await loginWithGoogle(userData);
@@ -136,26 +159,79 @@ const Register = () => {
     };
 
     try {
-      const result = await register(registrationData);
+      const result = await sendRegisterOtp(registrationData);
       if (result.success) {
-        setSuccess(isKa ? 'რეგისტრაცია წარმატებით დასრულდა! გადამისამართება...' : 'Registered successfully! Redirecting...');
-        setTimeout(() => {
-          navigate('/profile');
-        }, 1200);
+        setOtpDialogOpen(true);
+        setResendCooldown(60);
+        setOtpError('');
+        setOtpCode('');
       } else {
         setError(
           result.error ||
-          (isKa ? 'რეგისტრაცია ვერ მოხერხდა. სცადეთ სხვა მონაცემები.' : 'Registration failed. Please check your data.')
+          (isKa ? 'ვერიფიკაციის კოდის გაგზავნა ვერ მოხერხდა. სცადეთ სხვა მონაცემები.' : 'Failed to send verification code. Please check your data.')
         );
       }
     } catch (err) {
       console.error('Registration error:', err);
       setError(
         err?.message ||
-        (isKa ? 'რეგისტრაცია ვერ მოხერხდა. სცადეთ სხვა ელ-ფოსტა.' : 'Registration failed. Please check your data.')
+        (isKa ? 'ვერიფიკაციის კოდის გაგზავნა ვერ მოხერხდა. სცადეთ სხვა ელ-ფოსტა.' : 'Failed to send verification code.')
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifyOtpSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!otpCode || otpCode.trim().length < 6) {
+      setOtpError(isKa ? 'გთხოვთ შეიყვანოთ 6-ნიშნა კოდი' : 'Please enter the 6-digit code');
+      return;
+    }
+
+    setOtpLoading(true);
+    setOtpError('');
+
+    try {
+      const result = await verifyRegisterOtp(form.email.trim(), otpCode.trim());
+      if (result.success) {
+        setOtpDialogOpen(false);
+        setSuccess(isKa ? 'ელ-ფოსტა დადასტურდა! რეგისტრაცია წარმატებით დასრულდა. გადამისამართება...' : 'Email verified! Registered successfully. Redirecting...');
+        setTimeout(() => {
+          navigate('/profile');
+        }, 1200);
+      } else {
+        setOtpError(result.error || (isKa ? 'არასწორი კოდი. გთხოვთ გადაამოწმოთ.' : 'Invalid code. Please try again.'));
+      }
+    } catch (err) {
+      console.error('Verify OTP error:', err);
+      setOtpError(err?.message || (isKa ? 'კოდის შემოწმება ვერ მოხერხდა' : 'Failed to verify code'));
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0) return;
+    setOtpError('');
+    try {
+      const registrationData = {
+        firstname: form.firstname.trim(),
+        lastname: form.lastname.trim(),
+        email: form.email.trim(),
+        password: form.password,
+        country: form.country,
+        mobile: form.mobile.trim(),
+        phone: form.mobile.trim()
+      };
+      const result = await sendRegisterOtp(registrationData);
+      if (result.success) {
+        setResendCooldown(60);
+      } else {
+        setOtpError(result.error || (isKa ? 'ხელახლა გაგზავნა ვერ მოხერხდა' : 'Failed to resend code'));
+      }
+    } catch (err) {
+      setOtpError(err.message || (isKa ? 'ხელახლა გაგზავნა ვერ მოხერხდა' : 'Failed to resend code'));
     }
   };
 
@@ -610,6 +686,7 @@ const Register = () => {
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
+            text={isKa ? "Google-ით რეგისტრაცია" : "Sign up with Google"}
           />
 
           {/* Login Footer */}
@@ -663,6 +740,114 @@ const Register = () => {
           </Box>
         </CardContent>
       </Card>
+
+      {/* OTP Verification Dialog */}
+      <Dialog
+        open={otpDialogOpen}
+        onClose={() => {}}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            p: 1.5,
+            textAlign: 'center'
+          }
+        }}
+      >
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box sx={{ width: 56, height: 56, borderRadius: '50%', bgcolor: '#EDE9FE', color: '#6E3FF3', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 1.5 }}>
+            <EmailOutlinedIcon sx={{ fontSize: 32 }} />
+          </Box>
+          <Typography variant="h6" fontWeight={800} color="#1E1B4B">
+            {isKa ? 'ელ-ფოსტის დადასტურება' : 'Verify Your Email'}
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {isKa ? '6-ნიშნა ვერიფიკაციის კოდი გამოგზავნილია მისამართზე:' : 'A 6-digit verification code has been sent to:'}
+            <br />
+            <strong style={{ color: '#3A1D94' }}>{form.email}</strong>
+          </Typography>
+
+          {otpError && (
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 2, fontSize: '0.85rem' }}>
+              {otpError}
+            </Alert>
+          )}
+
+          <TextField
+            autoFocus
+            fullWidth
+            placeholder="• • • • • •"
+            value={otpCode}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+              setOtpCode(val);
+              if (otpError) setOtpError('');
+            }}
+            inputProps={{
+              maxLength: 6,
+              inputMode: 'numeric',
+              style: {
+                textAlign: 'center',
+                letterSpacing: '12px',
+                fontSize: '26px',
+                fontWeight: 800,
+                color: '#3A1D94'
+              }
+            }}
+            sx={{
+              mb: 2,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 3,
+                bgcolor: '#F8FAFC'
+              }
+            }}
+          />
+
+          <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
+            <Typography variant="caption" color="text.secondary">
+              {isKa ? 'არ მიგიღიათ კოდი?' : 'Didn’t get the code?'}
+            </Typography>
+            <Button
+              size="small"
+              onClick={handleResendOtp}
+              disabled={resendCooldown > 0}
+              sx={{ textTransform: 'none', fontWeight: 700, color: '#6E3FF3', p: 0, minWidth: 'auto' }}
+            >
+              {resendCooldown > 0
+                ? `${isKa ? 'ხელახლა გაგზავნა' : 'Resend in'} (${resendCooldown}s)`
+                : (isKa ? 'ხელახლა გაგზავნა' : 'Resend code')}
+            </Button>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5, pt: 1, flexDirection: 'column', gap: 1 }}>
+          <Button
+            fullWidth
+            variant="contained"
+            disabled={otpLoading || otpCode.length < 6}
+            onClick={handleVerifyOtpSubmit}
+            sx={{
+              bgcolor: '#3A1D94',
+              '&:hover': { bgcolor: '#2A146C' },
+              borderRadius: 3,
+              py: 1.2,
+              fontWeight: 700,
+              textTransform: 'none'
+            }}
+          >
+            {otpLoading ? <CircularProgress size={24} color="inherit" /> : (isKa ? 'დადასტურება' : 'Verify & Continue')}
+          </Button>
+          <Button
+            size="small"
+            onClick={() => setOtpDialogOpen(false)}
+            sx={{ color: '#64748B', textTransform: 'none', fontSize: 13 }}
+          >
+            {isKa ? 'მონაცემების შეცვლა' : 'Change information'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

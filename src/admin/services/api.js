@@ -1,10 +1,22 @@
 import axios from 'axios';
 import { getAdminCookie } from '../utils/cookies';
 
-const API_BASE_URL = '/api/v1';
-const API_V2_BASE_URL = '/api/v2';
-const API_V3_BASE_URL = '/api/v3';
-const API_V5_BASE_URL = '/api/v5';
+const getBackendRoot = () => {
+  const isLocal =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const envUrl = typeof process !== 'undefined' ? process.env?.REACT_APP_API_BASE_URL : undefined;
+  if (envUrl && (isLocal || !envUrl.includes('localhost'))) {
+    return envUrl.replace(/\/+$/, '');
+  }
+  return isLocal ? 'http://localhost:5000' : 'https://funfinder-front.vercel.app';
+};
+
+const ROOT_API = getBackendRoot();
+const API_BASE_URL = `${ROOT_API}/api/v1`;
+const API_V2_BASE_URL = `${ROOT_API}/api/v2`;
+const API_V3_BASE_URL = `${ROOT_API}/api/v3`;
+const API_V5_BASE_URL = `${ROOT_API}/api/v5`;
 
 // Get auth token from localStorage with fallback to cookies
 const getAuthToken = () => {

@@ -149,6 +149,51 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const sendRegisterOtp = async (userData) => {
+    try {
+      console.log('Sending register OTP:', userData);
+      const response = await authApiService.sendRegisterOtp(userData);
+      return { success: true, ...response };
+    } catch (error) {
+      console.error('Send OTP error:', error);
+      return { success: false, error: error.message || 'OTP-ის გაგზავნა ვერ მოხერხდა' };
+    }
+  };
+
+  const verifyRegisterOtp = async (email, code) => {
+    try {
+      console.log('Verifying register OTP:', email, code);
+      const response = await authApiService.verifyRegisterOtp(email, code);
+      const userObj = response?.user || response?.customer || (response?.id || response?.email ? response : null);
+      if (userObj) {
+        const token = response?.token || response?.access_token;
+        const sessionToken = response?.customer_session_token || response?.session_token;
+        const userInfo = {
+          ...userObj,
+          name: userObj.name || `${userObj.firstname || ''} ${userObj.lastname || ''}`.trim() || userObj.username || userObj.email,
+          role: 'customer',
+          roles: ['customer'],
+          isAdmin: false,
+          isStaff: false,
+          isCustomer: true,
+          token,
+          sessionToken,
+          redirectPath: '/profile',
+          loginMethod: "email",
+          lastLogin: new Date().toISOString()
+        };
+        setUser(userInfo);
+        localStorage.setItem('ff_logged_in', 'true');
+        localStorage.setItem('ff_user', JSON.stringify(userInfo));
+        return { success: true, user: userInfo, token, session_token: sessionToken };
+      }
+      return { success: true, message: 'Registration verified' };
+    } catch (error) {
+      console.error('Verify OTP error:', error);
+      return { success: false, error: error.message || 'კოდის გადამოწმება ვერ მოხერხდა' };
+    }
+  };
+
   const register = async (userData) => {
     try {
       console.log('Registration attempt with:', userData);
@@ -322,6 +367,8 @@ export const AuthProvider = ({ children }) => {
       refreshSession: checkAuthStatus,
       login, 
       register,
+      sendRegisterOtp,
+      verifyRegisterOtp,
       loginWithGoogle, 
       logout, 
       updateUser, 

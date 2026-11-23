@@ -46,34 +46,34 @@ const MapDemo = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Google Maps კოორდინატების მიღება
+      <Typography variant="h4" gutterBottom fontWeight={800} sx={{ color: '#3A1D94' }}>
+        ინტერაქტიული რუკა & კოორდინატების შერჩევა
       </Typography>
       
       <Typography variant="body1" color="text.secondary" paragraph>
         დააჭირეთ რუკაზე სასურველ ადგილას კოორდინატების მისაღებად
       </Typography>
 
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 3, width: '100%', alignItems: 'start' }}>
         {/* Map */}
-        <Grid item xs={12} lg={8}>
-          <Card>
-            <CardContent>
+        <Box sx={{ width: '100%' }}>
+          <Card sx={{ borderRadius: 3, overflow: 'hidden', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+            <CardContent sx={{ p: { xs: 1, sm: 1.5 }, '&:last-child': { pb: { xs: 1, sm: 1.5 } } }}>
               <GoogleMap
                 center={{ lat: 41.6500, lng: 41.6333 }}
                 onLocationSelect={handleLocationSelect}
                 currentLocation={currentLocation}
-                height="500px"
+                height="560px"
                 showSearch={true}
                 showControls={true}
               />
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
         {/* Coordinates Display */}
-        <Grid item xs={12} lg={4}>
-          <Card>
+        <Box sx={{ width: '100%' }}>
+          <Card sx={{ borderRadius: 3, border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 <LocationOn sx={{ mr: 1, verticalAlign: 'middle' }} />
@@ -156,8 +156,8 @@ const MapDemo = () => {
               )}
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* Instructions */}
       <Card sx={{ mt: 3 }}>

@@ -14,7 +14,7 @@ class OrderApiService {
         ? envUrl
         : isLocal
           ? 'http://localhost:5000'
-          : 'https://funfinder.ge';
+          : 'https://funfinder-front.vercel.app';
   }
 
   /**
@@ -288,7 +288,7 @@ class OrderApiService {
       console.log('Payment method:', paymentMethod);
       console.log('Calling endpoint: /api/v5/payment/bog/initiate');
       
-      const origin = (typeof window !== 'undefined' && window.location.origin) || 'https://funfinder.ge';
+      const origin = (typeof window !== 'undefined' && window.location.origin) || 'https://funfinder-front.vercel.app';
       const payload = {
         order_number: orderNumber,
         method: paymentMethod,  // Backend expects 'method', not 'payment_method'
@@ -583,6 +583,21 @@ class OrderApiService {
       isValid: errors.length === 0,
       errors
     };
+  }
+
+  /**
+   * Mark ticket as used (Check-In)
+   * @param {string|number} orderIdentifier - Order ID or Order Number
+   * @returns {Promise<Object>} Updated order
+   */
+  async markTicketUsed(orderIdentifier) {
+    try {
+      const response = await this.makeRequest(`/api/orders/${orderIdentifier}/mark-used`, 'POST');
+      return response.data || response;
+    } catch (error) {
+      console.error('Error marking ticket as used:', error);
+      throw this.handleError(error);
+    }
   }
 
   /**

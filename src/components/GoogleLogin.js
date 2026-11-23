@@ -11,7 +11,7 @@ const GoogleColorIcon = (props) => (
   </SvgIcon>
 );
 
-const GoogleLogin = ({ onSuccess, onError, disabled = false }) => {
+const GoogleLogin = ({ onSuccess, onError, disabled = false, text }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -184,7 +184,7 @@ const GoogleLogin = ({ onSuccess, onError, disabled = false }) => {
           <Typography variant="body2" sx={{ fontWeight: 600 }}>ავტორიზაცია...</Typography>
         ) : (
           <Typography variant="body2" sx={{ fontWeight: 600, letterSpacing: '0.2px' }}>
-            Google-ით შესვლა
+            {text || "Google-ით შესვლა"}
           </Typography>
         )}
       </Button>

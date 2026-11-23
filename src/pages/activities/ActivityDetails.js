@@ -59,6 +59,8 @@ export const extractActivityImages = (act) => {
       return (
         val.image ||
         val.url ||
+        val.raw_path ||
+        val.raw_image ||
         val.src ||
         val.path ||
         val.file ||

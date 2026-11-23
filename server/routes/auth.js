@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { getCollection, getNextId, toIdFilter } from '../db.js';
-import { handleCustomerRegister } from './customers.js';
+import { handleCustomerRegister, handleSendRegisterOtp, handleVerifyRegisterOtp } from './customers.js';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'funfinder_admin_jwt_secret_key_2026';
@@ -360,6 +360,9 @@ export const handleCreateAdmin = async (req, res) => {
 router.post('/login', handleLogin);
 router.post('/v1/auth/login', handleLogin);
 router.post('/v2/auth/login', handleLogin);
+router.post(['/register/send-otp', '/v1/auth/register/send-otp', '/v2/auth/register/send-otp'], handleSendRegisterOtp);
+router.post(['/register/verify-otp', '/v1/auth/register/verify-otp', '/v2/auth/register/verify-otp'], handleVerifyRegisterOtp);
+router.post(['/register/resend-otp', '/v1/auth/register/resend-otp', '/v2/auth/register/resend-otp'], handleSendRegisterOtp);
 router.post('/register', handleCustomerRegister);
 router.post('/v1/auth/register', handleCustomerRegister);
 router.post('/v2/auth/register', handleCustomerRegister);
